@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ch">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>//第一题
+        function fn(x, y) {
+            let total = x + y;
+            return function fn(x, y) {
+                if (typeof y == "undefined") {
+                    y = total;
+                }
+                // var a = total + x + y;
+                return this.total = x + y;
+            }
+        }
+        let res = fn(1, 2)(3);
+        console.log(res);
+
+
+
+    </script>
+
+    <script>//第二题
+        // go x=2 4 16
+        var x = 2;
+        var y = {
+            x: 3, //15
+            z: (function (x) {
+                //x=2 4 7  10
+                this.x *= x; //winx= winx*x=2*2=4
+                x += 2;
+                return function (n) {
+                    //a0 n=4 5
+                    this.x *= n; //winx= winx*n = 4*4=16   y.x = y.x*n = 3*5=15
+                    x += 3;
+                    console.log(x);//7  10
+                }
+            })(x)
+        };
+        var m = y.z;
+        m(4);
+        y.z(5);
+        console.log(x, y.x);//16,15
+
+    </script>
+
+
+
+    <script>//第三题
+        function Fn(n, m) {
+            n = n || 0;
+            m = m || 0;
+            this.x = n;
+            this.y = m;
+            this.getX = function () {
+                console.log(this.x);
+            }
+            return n + m;
+        }
+        Fn.prototype.sum = function () {
+            console.log(this.x + this.y);
+        }
+        Fn.prototype = {
+            getX: function () {
+                this.x += 1;//this指的是原型本身，所以this.x是指原型内的x属性，没有即为undefined
+                console.log(this.x);
+            },
+            getY: function () {
+                this.y -= 1;
+                console.log(this.y);
+            }
+        };
+        let f1 = new Fn(10, 20);
+        let f2 = new Fn;
+        console.log(f1.getX === f2.getX);//false
+        console.log(f1.getY === f2.getY);//true
+        console.log(f1.__proto__.getY === Fn.prototype.getY);//true
+        console.log(Fn.prototype.getX === f2.getX);//false
+        console.log(f1.constructor);//Object
+        f1.getX();//10
+        Fn.prototype.getX();//NaN
+        f2.getY();//-1
+        Fn.prototype.getY();//NaN
+        f1.sum();//报错
+    </script>
+
+
+    <script>//第四题
+        function fun() {
+            this.a = 0;
+            this.b = function () {
+                alert(this.a);
+            }
+        }
+        fun.prototype = {
+            b: function () {
+                this.a = 20;
+                alert(this.a);
+            },
+            c: function () {
+                this.a = 30;
+                alert(this.a)
+            }
+        }
+        var my_fun = new fun();
+        my_fun.b();//0
+        my_fun.c();//30
+    </script>
+
+    <script>//第五题
+        function C1(name) {//name是传的参数，没有传参数所以name为undefined
+            if (name) {//name为undefined,所以转化为不二类型为false，只有true才会执行其中的代码，所以C1中没有这个属性，去原型中找，即为"Tom"
+                this.name = name;
+            }
+        }
+        function C2(name) {//同上，name值为undefined，C2中有这个属性，所以为undefined
+            this.name = name;
+        }
+        function C3(name) {//同上，逻辑或取值为'join'
+            this.name = name || 'join';
+        }
+        C1.prototype.name = 'Tom';
+        C2.prototype.name = 'Tom';
+        C3.prototype.name = 'Tom';
+        alert((new C1().name) + (new C2().name) + (new C3().name));//=>'Tomundefinedjoin'
+    </script>
+
+    <script>//第六题
+        function Fn() {
+            let a = 1;
+            this.a = a;
+        }
+        Fn.prototype.say = function () {
+            this.a = 2;
+        }
+        Fn.prototype = new Fn;
+        let f1 = new Fn;
+
+        Fn.prototype.b = function () {
+            this.a = 3;
+        };
+        console.log(f1.a);//1
+        console.log(f1.prototype);//function Fn(){ let a = 1;this.a = a;b = function () {this.a = 3;};}
+        console.log(f1.b);//b = function () {this.a = 3;};
+        console.log(f1.hasOwnProperty('b'));//false
+        console.log('b' in f1);//true
+        console.log(f1.constructor == Fn);//false
+    </script>
+
+    <script>//第七题
+        function Person() {
+            this.name = 'zhufeng'
+        };
+        Person.prototype.getName = function () {
+            console.log(this.name)
+            console.log(this.age)
+        };
+        Person.prototype.age = 5000;
+
+        var per1 = new Person;
+        per1.getName();//'zhufeng',5000
+        per1.age = 9;
+        per1.getName();//'zhufeng',9
+        console.log(per1.age); 9
+        var per2 = new Person;
+        console.log(per2.age);//5000
+    </script>
+</body>
+
+</html>
